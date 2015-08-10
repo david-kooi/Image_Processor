@@ -110,7 +110,6 @@ function updateUploadList(imageNames){
 	    <submit class="btn btn-sm btn-default" onclick="uploadMultiple()">Upload Files</submit>
   </form>
 
-  <a id='registerSetting' href=''
 
   <div id='uploadList'>
 
