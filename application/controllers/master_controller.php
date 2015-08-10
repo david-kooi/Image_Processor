@@ -24,11 +24,15 @@ class master_controller extends CI_Controller {
             $this->load->model('image_upload_functs');
             $this->load->model('DB_functs');
 
+
+		$sessionData = $this->session->all_userdata();
+
        }
 
 	public function index()
 	{
 		log_message('info', 'master_controller: In index()');
+
 
 		//Load Start Page
 		$this->load->view('start_page');
@@ -36,15 +40,21 @@ class master_controller extends CI_Controller {
 
 		//Load Start Data (Company and Ratio Lists)
 
-
 	}
 
 	public function uploadImages(){
 		log_message('info', 'master_controller: In uploadImages()');
 
-		$photos = $this->image_upload_fucts->uploadImages();
+		$photoNames = $this->image_upload_functs->uploadImages();
 
-		echo json_encode($photos);
+		//Save number of photos uploaded
+		$sessionData['numPhotos'] = count($photoNames);
+		log_message('debug', 'master_controller: Num Photos Uploaded: '.$sessionData['numPhotos']);
+
+		//echo hello;
+		//Return photoNames to client side
+		echo json_encode($photoNames);
+
 		//TODO
 		//$this->image_upload_functs->checkUpload($photos);
 	}

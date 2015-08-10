@@ -3,14 +3,23 @@
 class image_upload_functs extends CI_Model{
 
 	
+	public function __construct()
+   {
+        parent::__construct();
+
+        log_message('info', 'In: image_upload_functs');
+
+
+   }
+
 	function uploadImages(){
-		log_message('info','model_image: uploadImage');
+		log_message('info','In: uploadImage');
 
 		//Stores file names
 		$_PHOTOS = array();
 
 		$numPhotos = count($_FILES['photos']['name']);
-		log_message('debug','model_image: numPhotos: '.$numPhotos);
+		log_message('debug','image_functs: uploadImages: numPhotos: '.$numPhotos);
 
 		/* Data format of $_FILES */
 
@@ -33,8 +42,6 @@ class image_upload_functs extends CI_Model{
 				if(isset($_FILES['photos'][$key])){
 					$photo[$key] = $_FILES['photos'][$key][$i];
 				}
-				
-
 			}
 
 			/*
@@ -44,12 +51,10 @@ class image_upload_functs extends CI_Model{
 			$_FILES['userfile'] = $photo;
 		
 			$fileName = $this->ciImageUpload();
-			log_message('debug','model_image: fileName: '.$fileName);
+
 
 			//Keep track of fileNames
 			$_PHOTOS[$i] = $fileName;
-
-			
 		}	
 
 		return $_PHOTOS;
@@ -57,7 +62,6 @@ class image_upload_functs extends CI_Model{
 	}
 
 	function ciImageUpload(){
-			log_message('info', 'image_upload_functs');
 			log_message('info', 'In: ciImageUpload()');
 
 			if(!file_exists(TMP_FLD)){
