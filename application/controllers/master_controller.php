@@ -58,6 +58,11 @@ class master_controller extends CI_Controller {
 		//TODO
 		//$this->image_upload_functs->checkUpload($photos);
 	}
+
+	public function toAdminPage(){
+		$this->load->view('admin_page');
+		log_message('info', 'master_controller: admin_page loaded');
+	}
 }
 
 /* End of file welcome.php */

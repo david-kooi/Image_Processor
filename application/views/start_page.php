@@ -72,7 +72,6 @@ function uploadMultiple(){
       };
       
 
-      //xhr.onload = xhrResponse;
       xhr.open('POST', postURL, true);
       xhr.send(formData);
     }
@@ -82,9 +81,7 @@ function updateUploadList(imageNames){
 
   var uploadList = document.getElementById('uploadList');
 
-  //imageList = imageNames.split(',');
-  //TODO: Create a thumbnail for each file
-  
+  //TODO: Create a thumbnail for each file  
   for(var i = 0; i < imageNames.length; i++){
     console.log("Updating: "+imageNames[i]);
 
@@ -104,6 +101,8 @@ function updateUploadList(imageNames){
 <head>
 
 	<p> Image Server <p>
+
+  <a href='<?base_url()?>index.php/master_controller/toAdminPage'>Administration</a>
 
 	<form method="post" enctype="multipart/form-data" id="uploadForm">
 	    <input type="file" name="files[]" id="userFiles" multiple>
