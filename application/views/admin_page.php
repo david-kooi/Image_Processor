@@ -1,97 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<script src='<?php echo base_url();?>js/jquery-1.11.2.js'></script>
+<script src='<?php echo base_url();?>js/handlebars-v3.0.3.js'></script>
+
 <script>
-	
 	function loadTemplates(){
 
-		//Create 
+		console.log('loadTemplates');
 
+		var source = $("#create-edit-selector-template").html();
+		var c_e_s_template = Handlebars.compile(source);
+		var context = { title:'Is Title',
+						objects:[
+								{'id':10, 'name':'Name1'},
+								{'id':11, 'name':'Name2'},
+								{'id':12, 'name':'Name3'}
+								]
+					  }
+		var html = c_e_s_template(context);
+		console.log(html);
 
-	}
-
-	//Only load create/edit functions
-	//String option: 'create' (or) 'delete'
-	//String type: name of the object to create or edit
-	function loadCE_Template(option, type){
-		tmpl = document.getElementById('userAction')
-
-		//Create title
-		title = tmpl.content.getElementById('title');
-		title.innerHTML = option + type;
-
-		//Populate field form 
-		fieldForm = tmpl.content.getElementById('fieldForm');
-		if(type == 'company'){
-			loadCompanyFields(tmpl);
-		}else if(type = 'ratio'){
-			 loadRatioFields(tmpl);
-		}else if type ='relation'){
-			 loadRelationOptions(tmpl);
-		}else{
-			msg='loadCE_Template::type=' + type + '\ntype not recognized.'
-			alert('ERROR\n' + msg)
-		}
-
-
-
-
-	}
-
-	function loadCompanyFields(option, tmpl){
-		companyFields = tmpl.content.getElementById('fieldForm');
-		//Pull empty company from DB and create fields
-
-		//If edit populate with existing DB entry
-		if(option == 'edit'){
-
-		}
-	}
-
-	function loadRatioFields(option, tmpl){
-		ratioFields = tmpl.content.getElementById('ratioFields');
-		//Pull empty field from DB and create fields
-
-		if(option == 'edit'){
-
-
-		}
-
-	}
-
-	//Load company and ratio dropdowns
-	function loadRelationOptions(tmpl){
-		cList = tmpl.content.getElementById('companyList');
-		//Pull all companies from DB and add to cList
-
-		rList = tmpl.content.getElementById('ratioList');
-		//Pull all ratios from DB and add to rList
+		//Append to template div
+		$('.user_action').append(html);
 
 	}
 
 
-	//Only load delete functions
-	/*
-	String option: delete
-	String type: name of the object to delete
-	*/
-	function loadDeleteTemplate(option, type){
-		template = document.getElementById('userAction')
-
-		//Create Title
-		title = template.content.getElementById('title');
-		title.innerHTML = option + type
-
-	}
-
-	function actionSubmit(){
+</script>
 
 
-	}
+<script id="create-edit-selector-template" type="text/x-handlebars-template">
+	<title>{{title}}</title>
 
-	function deleteSubmit(){
+	<select id=objSelector>
+	{{#each objects}}
+		<option value={{this.id}}>{{this.name}}</option>
+	{{/each}}
+	</select>
 
-	}
+</script>
+
+<script id='create-edit-field-tempalte' type='text/x-handlebars-template'>
+	<form id='objFields'>
+		{{#each obj.fields}}
+
+	</form>
 
 </script>
 
@@ -101,41 +55,24 @@
 
 <body>
 
-	<select id='action' onchange='loadTempates()'>
-		<option value='create'>Create</option>
-		<option value='edit'>Edit</option>
-		<option value='delete'>Delete</option>
-	</select>
-
-
-	<select id='reciever' onchange='loadTempates()'>
-		<option value'company'>Company</option>
-		<option value'ratio'>Ratio</option>
-		<option value'relation'>Relation</option>
-	</select>
-
-
-	<template id='userAction'>
-
-		<p id='title'> </p>
-
-		<!--Where user creates or edits fields (CE) -->
-		<form id='fieldForm' hidden>
-
-		</form>
-
-
-		<!--User can delete an object from the list-->
-		<select id='companyList' hidden>
-
-		</select>
-		<select id='ratioList' multiple hidden>
-
+	<div id='selections'>
+		<select id='action' onchange='loadTemplates()'>
+			<option value='create'>Create</option>
+			<option value='edit'>Edit</option>
+			<option value='delete'>Delete</option>
 		</select>
 
-		<button onclick='' hidden> </button>
 
-	</template>
+		<select id='reciever' onchange='loadTemplates()'>
+			<option value'company'>Company</option>
+			<option value'ratio'>Ratio</option>
+			<option value'relation'>Relation</option>
+		</select>
+	</div>
 
+	<div class='user_action' id='user_action'>
+
+
+	</div>
 
 </body>
