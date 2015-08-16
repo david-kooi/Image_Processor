@@ -43,14 +43,12 @@
 	*/
 
 
-	function initialSetup(){
-		$(document).ready(function(){
-			//Set adminSubmit to hidden
-			$('#adminSubmit').hide();
+	$(document).ready(function(){
+		getCompany_JSON_list();
 
-		});
+	});
 
-	}
+	
 
 	/*
 		Handles generation of section A
@@ -69,7 +67,8 @@
 		if (reciever == 'relation'){
 			console.log('relation case');
 
-			//companyList = getCompany_JSON_list();
+
+			companyList = getCompany_JSON_list();
 			LOAD_select_comp_or_ratio_template(companyList);
 		}
 		// create company or ratio case
@@ -91,6 +90,17 @@
 			LOAD_select_comp_or_ratio_template(objList);
 		}
 	
+	}
+
+	/*
+		Data Requests
+	*/
+	function getCompany_JSON_list(){
+		$.ajax({
+			url:"<?echo base_url()?>master_controller/clientRequest"
+		}).done(function(data){
+			console.log('Recieved Data: ' + data);
+		});
 	}
 
 	function sectionB_create_with_empty_fields(){
@@ -201,8 +211,9 @@
 
 	function LOAD_input_fields(data){
 		console.log('LOADING input_fields');
+
 		// adminSubmit now valid
-		document.getElementById('adminSubmit').show();
+		$('#adminSubmit').fadeIn();
 
 		var source = $('#input_fields_template').html();
 		var i_f_template = Handlebars.compile(source);
@@ -213,10 +224,11 @@
 
 	}
 
-	function LOAD_relation_tempalte(data){
+	function LOAD_relation_template(data){
 		console.log('LOADING relation_template');
+
 		// adminSubmit now valid
-		document.getElementById('adminSubmit').style.visibility = "";
+		$('#adminSubmit').fadeIn();
 
 		var source = $('#relation_template').html();
 		var r_template = Handlebars.compile(source);
@@ -312,6 +324,6 @@
 
 	</div>
 
-	<button onclick='adminSubmit()' id='adminSubmit'>Submit</button>
+	<button onclick='adminSubmit()' id='adminSubmit' hidden>Submit</button>
 
 </body>

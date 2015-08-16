@@ -9,7 +9,7 @@ function uploadMultiple(){
       /* Configuration */
       var formId = 'uploadForm';
       var inputId = 'userFiles';
-      var postURL =  "index.php/master_controller/uploadImages";
+      var postURL =  "<?echo base_url()?>master_controller/uploadImages";
 
       console.log('In uploadMultiple()');
       console.log('Posting to:' + postURL);
@@ -102,7 +102,7 @@ function updateUploadList(imageNames){
 
 	<p> Image Server <p>
 
-  <a href='<?base_url()?>index.php/master_controller/toAdminPage'>Administration</a>
+  <a href='<?base_url()?>master_controller/toAdminPage'>Administration</a>
 
 	<form method="post" enctype="multipart/form-data" id="uploadForm">
 	    <input type="file" name="files[]" id="userFiles" multiple>

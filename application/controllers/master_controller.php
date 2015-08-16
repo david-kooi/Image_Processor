@@ -42,6 +42,11 @@ class master_controller extends CI_Controller {
 
 	}
 
+	public function clientRequest(){
+		//$data = $this->input->post('data');
+		echo 'And Back';
+	}
+
 	public function uploadImages(){
 		log_message('info', 'master_controller: In uploadImages()');
 
@@ -51,7 +56,6 @@ class master_controller extends CI_Controller {
 		$sessionData['numPhotos'] = count($photoNames);
 		log_message('debug', 'master_controller: Num Photos Uploaded: '.$sessionData['numPhotos']);
 
-		//echo hello;
 		//Return photoNames to client side
 		echo json_encode($photoNames);
 
