@@ -43,8 +43,8 @@ class master_controller extends CI_Controller {
 	}
 
 	public function clientRequest(){
-		//$data = $this->input->post('data');
-		echo 'And Back';
+		$data = $this->input->post('data');
+		log_message('debug','master_controller: clientRequest: Request Command: '.$data);
 	}
 
 	public function uploadImages(){

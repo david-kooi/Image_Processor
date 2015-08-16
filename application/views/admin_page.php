@@ -97,7 +97,9 @@
 	*/
 	function getCompany_JSON_list(){
 		$.ajax({
-			url:"<?echo base_url()?>master_controller/clientRequest"
+			url:"<?echo base_url()?>master_controller/clientRequest",
+			data:{data:'I am data'},
+			method:'POST'
 		}).done(function(data){
 			console.log('Recieved Data: ' + data);
 		});
