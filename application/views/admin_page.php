@@ -44,8 +44,8 @@
 
 
 	$(document).ready(function(){
-		getCompany_JSON_list();
-
+		getCompany_JSON_list(dataHandler);
+		//getEmptyCommand();
 	});
 
 	
@@ -95,15 +95,44 @@
 	/*
 		Data Requests
 	*/
-	function getCompany_JSON_list(){
+	function dataHandler(data){
+		console.log('-----Data Handler-----');
+		dataObj = JSON.parse(data);
+		console.log('data: ' + data);
+
+
+
+		switch(dataObj.header){
+			case 'commandList':
+				console.log('commandList recieved.');
+				break;
+			default:
+				console.log('dataObj header not recognized.');
+
+
+		}
+	}
+
+	function getEmptyCommand(){
 		$.ajax({
-			url:"<?echo base_url()?>master_controller/clientRequest",
-			data:{data:'I am data'},
-			method:'POST'
+			url:"<?echo base_url()?>master_controller/getEmptyCommand",
 		}).done(function(data){
-			console.log('Recieved Data: ' + data);
+			console.log("Recieved: " + data);
 		});
 	}
+
+	function getCompany_JSON_list(dataHandler){
+		request = 'companyList';
+
+		$.ajax({
+			url:"<?echo base_url()?>master_controller/clientRequest",
+			data:{data: request},
+			method:'POST'
+		}).done(function(data){
+			dataHandler(data);
+		});
+	}
+	
 
 	function sectionB_create_with_empty_fields(){
 		console.log('Creating fields as EMPTY');

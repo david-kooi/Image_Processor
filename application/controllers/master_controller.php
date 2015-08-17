@@ -42,9 +42,23 @@ class master_controller extends CI_Controller {
 
 	}
 
+	public function getEmptyCommand(){
+		$cmd = [""];
+	}
+
 	public function clientRequest(){
 		$data = $this->input->post('data');
 		log_message('debug','master_controller: clientRequest: Request Command: '.$data);
+
+		switch($data){
+			case 'companyList':
+				$response = $this->DB_functs->getCompanyList();
+				echo json_encode($response);
+				break;
+
+			default:
+				log_message('error','ERROR: master_controller: clientRequest: request string not recognized');
+		}
 	}
 
 	public function uploadImages(){
