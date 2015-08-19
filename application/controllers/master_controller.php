@@ -47,17 +47,17 @@ class master_controller extends CI_Controller {
 	}
 
 	public function clientRequest(){
-		$data = $this->input->post('data');
-		log_message('debug','master_controller: clientRequest: Request Command: '.$data);
+		$requestHeader = $this->input->post('requestHeader');
+		log_message('debug','master_controller: clientRequest: '.$requestHeader);
 
-		switch($data){
+		switch($requestHeader){
 			case 'companyList':
-				$response = $this->DB_functs->getCompanyList();
-				echo json_encode($response);
+				$companyList = $this->DB_functs->getCompanyList();
+				echo json_encode($companyList);
 				break;
 
 			default:
-				log_message('error','ERROR: master_controller: clientRequest: request string not recognized');
+				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
 		}
 	}
 

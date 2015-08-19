@@ -44,7 +44,8 @@
 
 
 	$(document).ready(function(){
-		getCompany_JSON_list(dataHandler);
+		sectionA_Handler()
+		//getCompany_JSON_list(dataHandler);
 		//getEmptyCommand();
 	});
 
@@ -67,9 +68,10 @@
 		if (reciever == 'relation'){
 			console.log('relation case');
 
-
-			companyList = getCompany_JSON_list();
-			LOAD_select_comp_or_ratio_template(companyList);
+			// Gets company list
+			// Data handler populates the objSelector
+			getCompany_JSON_list(dataHandler);
+			
 		}
 		// create company or ratio case
 		else if(action == 'create'){
@@ -82,12 +84,12 @@
 			//Populate object list
 			var objList = null;
 			if(reciever == 'company'){
-				//objList = getCompany_JSON_list();
+				getCompany_JSON_list(dataHandler);
 			}
 			else if(reciever == 'ratio'){
 				//objList = getRatio_JSON_list();
 			}
-			LOAD_select_comp_or_ratio_template(objList);
+			//LOAD_select_comp_or_ratio_template(objList);
 		}
 	
 	}
@@ -95,23 +97,6 @@
 	/*
 		Data Requests
 	*/
-	function dataHandler(data){
-		console.log('-----Data Handler-----');
-		dataObj = JSON.parse(data);
-		console.log('data: ' + data);
-
-
-
-		switch(dataObj.header){
-			case 'commandList':
-				console.log('commandList recieved.');
-				break;
-			default:
-				console.log('dataObj header not recognized.');
-
-
-		}
-	}
 
 	function getEmptyCommand(){
 		$.ajax({
@@ -122,17 +107,33 @@
 	}
 
 	function getCompany_JSON_list(dataHandler){
-		request = 'companyList';
+		header = 'companyList';
 
 		$.ajax({
 			url:"<?echo base_url()?>master_controller/clientRequest",
-			data:{data: request},
+			data:{requestHeader: header},
 			method:'POST'
 		}).done(function(data){
 			dataHandler(data);
 		});
 	}
 	
+	function dataHandler(data){
+		console.log('-----Data Handler-----');
+		dataObj = JSON.parse(data);
+		console.log('data: ' + data)
+
+		switch(dataObj.header){
+			case 'companyList':
+				console.log('companyList recieved.');
+				LOAD_select_comp_or_ratio_template(dataObj);
+				break;
+			default:
+				console.log('dataObj header not recognized.');
+
+
+		}
+	}
 
 	function sectionB_create_with_empty_fields(){
 		console.log('Creating fields as EMPTY');
@@ -228,12 +229,20 @@
 		Loads dropdown for create/edit companies and ratios
 	*/
 	function LOAD_select_comp_or_ratio_template(data){
+		console.log('Here');
+		if($('#objSelector').length){
+			return;
+		}
+
 		console.log('Loading objSelector');
+		
+		console.log('data: ' + data);
 
 		var source = $("#select_comp_or_ratio_template").html();
 		var s_c_r_template = Handlebars.compile(source);
 
-		var html = c_e_s_template(data);
+		//dat = {'array':[{"id":"2","name":"CompanyA"},{"id":"3","name":"CompanyB"}]}
+		var html = s_c_r_template(data);
 
 		//Append to template div
 		$('.sectionA').append(html);
@@ -295,7 +304,7 @@
 <script id="select_comp_or_ratio_template" type="text/x-handlebars-template">
 
 	<select id='objSelector' onclick='sectionB_Handler()'>
-	{{#each objects}}
+	{{#each data}}
 		<option value={{this.id}}>{{this.name}}</option>
 	{{/each}}
 	</select>
