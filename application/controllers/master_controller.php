@@ -55,7 +55,10 @@ class master_controller extends CI_Controller {
 				$companyList = $this->DB_functs->getCompanyList();
 				echo json_encode($companyList);
 				break;
-
+			case 'ratioList':
+				$ratioList = $this->DB_functs->getRatioList();
+				echo json_encode($ratioList);
+				break;
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
 		}

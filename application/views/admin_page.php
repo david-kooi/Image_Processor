@@ -45,8 +45,6 @@
 
 	$(document).ready(function(){
 		sectionA_Handler()
-		//getCompany_JSON_list(dataHandler);
-		//getEmptyCommand();
 	});
 
 	
@@ -70,7 +68,7 @@
 
 			// Gets company list
 			// Data handler populates the objSelector
-			getCompany_JSON_list(dataHandler);
+			getObj_JSON_list(dataHandler, 'companyList');
 			
 		}
 		// create company or ratio case
@@ -84,10 +82,10 @@
 			//Populate object list
 			var objList = null;
 			if(reciever == 'company'){
-				getCompany_JSON_list(dataHandler);
+				getObj_JSON_list(dataHandler, 'companyList');
 			}
 			else if(reciever == 'ratio'){
-				//objList = getRatio_JSON_list();
+				getObj_JSON_list(dataHandler, 'ratioList');
 			}
 			//LOAD_select_comp_or_ratio_template(objList);
 		}
@@ -106,8 +104,19 @@
 		});
 	}
 
-	function getCompany_JSON_list(dataHandler){
-		header = 'companyList';
+	function getObj_JSON_list(dataHandler, request){
+
+		$.ajax({
+			url:"<?echo base_url()?>master_controller/clientRequest",
+			data:{requestHeader: request},
+			method:'POST'
+		}).done(function(data){
+			dataHandler(data);
+		});
+	}
+
+	function getRatio_JSON_list(dataHandler){
+		header = 'ratioList';
 
 		$.ajax({
 			url:"<?echo base_url()?>master_controller/clientRequest",
@@ -126,6 +135,10 @@
 		switch(dataObj.header){
 			case 'companyList':
 				console.log('companyList recieved.');
+				LOAD_select_comp_or_ratio_template(dataObj);
+				break;
+			case 'ratioList':
+				console.log('ratioList recieved');
 				LOAD_select_comp_or_ratio_template(dataObj);
 				break;
 			default:
@@ -229,9 +242,9 @@
 		Loads dropdown for create/edit companies and ratios
 	*/
 	function LOAD_select_comp_or_ratio_template(data){
-		console.log('Here');
+		// If objSelector exists remove 
 		if($('#objSelector').length){
-			return;
+			$('#objSelector').remove();
 		}
 
 		console.log('Loading objSelector');

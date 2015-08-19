@@ -18,4 +18,14 @@ class Object_Templates extends CI_Model{
 					     );
 		return $company;
 	}
+
+	function getRatioObject(){
+		$ratio = array(
+					   'id'=>null,
+					   'name'=>null,
+					   'value'=>null,
+					   'fk_comp'=>null
+					);
+		return $ratio;
+	}
 }
