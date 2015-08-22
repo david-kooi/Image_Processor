@@ -24,11 +24,8 @@ class DB_functs extends CI_Model{
 			$companyList[] = $company;
 		}
 
-		$response = $this->Object_Templates->getResponseObject();
-		$response['header'] = 'companyList';
-		$response['data'] = $companyList;
 
-		return $response;
+		return $companyList;
 	}
 
 	public function getRatioList(){
@@ -39,6 +36,7 @@ class DB_functs extends CI_Model{
 		foreach ($query->result() as $row){
 			log_message('debug', 'ratio: '.$row->name);
 
+			$ratio['id'] = $row->id;
 			$ratio['name'] = $row->name;
 			$ratio['value'] = $row->value;
 			$ratio['fk_comp'] = $row->fk_comp;
@@ -46,15 +44,52 @@ class DB_functs extends CI_Model{
 			$ratioList[] = $ratio;
 
 		}
-		$response = $this->Object_Templates->getResponseObject();
-		$response['header'] = 'ratioList';
-		$response['data'] = $ratioList;
 
-		return $response; 
+
+		return $ratioList; 
 	}
 
-	public function filterCompanies(){
+	//Get all ratios that a company is tied to.
+	/*
+		Get full list and mark ratios that are tied to the company
+	*/
+	public function getCompanyRatioList($objId){
+		$fullRatioList = $this->getRatioList();
+
+		foreach($fullRatioList as $ratio){
+			if($ratio['fk_comp'] == $objId){
+				$ratio['checked'] = True;
+			}
+		}
+		return $fullRatioList;
 
 	}
+
+	public function getCompanyById($objId){
+		$query = $this->db->query("SELECT * FROM `Companies` WHERE `id` = ".$objId);
+		$data = $query->result()[0];
+
+		$company = $this->Object_Templates->getCompanyObject();
+		$company['id'] = $data->id;
+		$company['name'] = $data->name;
+
+		return $company;
+	}
+
+	public function getRatioById($objId){
+		$query = $this->db->query("SELECT * FROM `Ratios` WHERE `id` =".$objId);
+		$data = $query->result()[0];
+
+		$ratio = $this->Object_Templates->getRatioObject();
+		
+		$ratio['id'] = $data->id;
+		$ratio['name'] = $data->name;
+		$ratio['value'] = $data->value;
+		$ratio['fk_comp'] = $data->fk_comp;
+
+		return $ratio;
+
+	}
+
 
 }

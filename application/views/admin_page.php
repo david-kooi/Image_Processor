@@ -53,7 +53,10 @@
 		Handles generation of section A
 	*/
 	function sectionA_Handler(){
-		console.log('----SectionA_Handler-----')
+		//Clear all previous templates
+		clearTemplates();
+
+		console.log('----SectionA_Handler-----');
 
 		var action = document.getElementById('actionDropDown').value;
 		var reciever = document.getElementById('recieverDropDown').value;
@@ -68,7 +71,7 @@
 
 			// Gets company list
 			// Data handler populates the objSelector
-			getObj_JSON_list(dataHandler, 'companyList');
+			processObj_JSON_list(dataHandler, 'companyList');
 			
 		}
 		// create company or ratio case
@@ -82,12 +85,12 @@
 			//Populate object list
 			var objList = null;
 			if(reciever == 'company'){
-				getObj_JSON_list(dataHandler, 'companyList');
+				processObj_JSON_list(dataHandler, 'companyList');
 			}
 			else if(reciever == 'ratio'){
-				getObj_JSON_list(dataHandler, 'ratioList');
+				processObj_JSON_list(dataHandler, 'ratioList');
 			}
-			//LOAD_select_comp_or_ratio_template(objList);
+			sectionB_Handler();
 		}
 	
 	}
@@ -95,16 +98,9 @@
 	/*
 		Data Requests
 	*/
-
-	function getEmptyCommand(){
-		$.ajax({
-			url:"<?echo base_url()?>master_controller/getEmptyCommand",
-		}).done(function(data){
-			console.log("Recieved: " + data);
-		});
-	}
-
-	function getObj_JSON_list(dataHandler, request){
+	function processObj_JSON_list(dataHandler, request){
+		console.log('--- processObj_JSON_list ---');
+		console.log('request: ' + request);
 
 		$.ajax({
 			url:"<?echo base_url()?>master_controller/clientRequest",
@@ -114,20 +110,10 @@
 			dataHandler(data);
 		});
 	}
-
-	function getRatio_JSON_list(dataHandler){
-		header = 'ratioList';
-
-		$.ajax({
-			url:"<?echo base_url()?>master_controller/clientRequest",
-			data:{requestHeader: header},
-			method:'POST'
-		}).done(function(data){
-			dataHandler(data);
-		});
-	}
 	
 	function dataHandler(data){
+		var reciever = document.getElementById('recieverDropDown');
+
 		console.log('-----Data Handler-----');
 		dataObj = JSON.parse(data);
 		console.log('data: ' + data)
@@ -135,12 +121,29 @@
 		switch(dataObj.header){
 			case 'companyList':
 				console.log('companyList recieved.');
-				LOAD_select_comp_or_ratio_template(dataObj);
+				LOAD_select_comp_or_ratio_template(dataObj['data']);
 				break;
 			case 'ratioList':
 				console.log('ratioList recieved');
-				LOAD_select_comp_or_ratio_template(dataObj);
+				LOAD_select_comp_or_ratio_template(dataObj['data']);
 				break;
+			case 'emptyCompany':
+				console.log('emptyCompany recieved');
+				LOAD_input_fields(dataObj['data']);
+				break;
+			case 'emptyRatio':
+				console.log('emptyRatio recieved');
+				LOAD_input_fields(dataObj['data']);
+				break;
+			case 'companyRatioList':
+				console.log('companyRatioList recieved');
+				LOAD_relation_template(dataObj['data']);
+				break;
+			case 'updateCompany':
+				LOAD_input_fields(dataObj['data']);
+				break;
+			case 'updateRatio':
+				LOAD_input_fields(dataObj['data']);
 			default:
 				console.log('dataObj header not recognized.');
 
@@ -156,32 +159,31 @@
 		fieldData = null;
 		//Get empty fields
 		if (reciever == 'company'){
-			//Get empty company fields
-			fieldData = get_empty_field_data(reciever);
+			//Add empty company fields
+			processObj_JSON_list(dataHandler, 'emptyCompany');
 		}
 		else if (reciever == 'ratio'){
-			//Get empty ratio fields
-			fieldData = get_empty_field_data(reciever);
+			//Add empty ratio fields
+			processObj_JSON_list(dataHandler, 'emptyRatio');
 		}
-		LOAD_input_fields(fieldData);
 	}
 	/*
 		Handles fields
 	*/
 	function sectionB_Handler(){
+		console.log('------- Section B Handler --------');
+
 		var action = document.getElementById('actionDropDown').value;
 		var reciever = document.getElementById('recieverDropDown').value;
-		if ($('objSelector').length == 0){
-			console.log('CODE ERROR: sectionB_Handler must be called ONLY by objSelector <select>')
-			return;
-		}
-		var obj = document.getElementById('objSelector').value;
+		var objId = document.getElementById('objSelector').value;
+
+		console.log('objId: ' + objId);
 
 		// reciever case:
 		// Load reciever template
 		if (reciever == 'relation'){
-			relationData = getRelationData(obj);
-			LOAD_relation_template(relationData);
+			request = 'companyRatioList_' + objId;
+			processObj_JSON_list(dataHandler, request);
 		}
 		// delete Case:
 		// - Nothing to be loaded...delete handled by adminSubmit
@@ -190,95 +192,139 @@
 		}
 		// update case:
 		else if(action == 'update'){
-			fieldData = get_populated_field_data(action, reciever, obj);
-			LOAD_input_fields(fieldData);
+			
+			if(reciever == 'company'){
+				
+				console.log('update company: ' + objId);
+				request = 'updateCompany_' + objId;
+				processObj_JSON_list(dataHandler, request);
+			}
+			else if (reciever == 'ratio'){
+
+				console.log('update ratio: ' + objId);
+				request = 'updateRatio_' + objId;
+				processObj_JSON_list(dataHandler, request);
+			}
 		}
 
 	}
 
-	function get_empty_field_data(action, reciever){
-		console.log('Getting empty_field_data');
-		var fieldData = null;
+	function sleep(milliseconds) {
+	  var start = new Date().getTime();
+		for (var i = 0; i < 1e7; i++) {
+		    if ((new Date().getTime() - start) > milliseconds){
+		      break;
+		    }
+		  }
+		}
 
-		if (reciever == 'company'){
-			//Get blank fields
-			//fieldData == 
-		}
-		else if (reciever == 'ratio'){
-			//Get blank fields
-			//fieldData == 
-		}
-		return fieldData;
+	function clearTemplates(){
+		clearObjFields();
+		clearRelationTemplate();
+		clearObjSelector();
 	}
 
-	// Get field data of company or ratio
-	// If: action == 'create' return blank fields
-	// Else: return fields populated with database fields
-	function get_populated_field_data(action, reciever, obj){
-		console.log('Getting populated_field_data');
+	function clearObjFields(){
 
-		var fieldData = null;
-
-		if (reciever == 'company'){
-			//fieldData = 
-		}
-		else if (reciever == 'ratio'){
-			//fieldData == 
+		// If objFields exists remove so it can be reloaded
+		if($('#objFields') != null){
+			$('#objFields').remove();
 		}
 
-		return fieldData;
-	}	
+	}
 
-	function getRelationData(company){
-		console.log('Getting relationData');
+	function clearObjSelector(){
+		// If objSelector exists remove so it can be reloaded
+		if($('#objSelector') != null){
+			$('#objSelector').remove();
+		}
+	}
 
-		//Get data from server side
-
-		return null;
-
+	function clearRelationTemplate(){
+		if($('#relationCheckForm') != null){
+			$('#relationCheckForm').remove();
+		}
 	}
 
 	/*
 		Loads dropdown for create/edit companies and ratios
 	*/
 	function LOAD_select_comp_or_ratio_template(data){
-		// If objSelector exists remove 
-		if($('#objSelector').length){
-			$('#objSelector').remove();
-		}
+		clearObjSelector();
+		clearObjFields();
 
 		console.log('Loading objSelector');
-		
-		console.log('data: ' + data);
+
+		//Wrap data
+		var dataToPass = [];
+		dataToPass['data'] = data;
+		console.log('data: ' + dataToPass['data']);
 
 		var source = $("#select_comp_or_ratio_template").html();
 		var s_c_r_template = Handlebars.compile(source);
 
 		//dat = {'array':[{"id":"2","name":"CompanyA"},{"id":"3","name":"CompanyB"}]}
-		var html = s_c_r_template(data);
+		var html = s_c_r_template(dataToPass);
 
 		//Append to template div
 		$('.sectionA').append(html);
 
+		sectionB_Handler();
+
 	}
 
 	function LOAD_input_fields(data){
+		var action = document.getElementById('actionDropDown').value;
+		if(action != 'update'){
+			clearObjSelector();
+		}
+		clearObjFields();
+
 		console.log('LOADING input_fields');
 
 		// adminSubmit now valid
 		$('#adminSubmit').fadeIn();
 
+		//Filter and wrap data
+		dataToPass = [];
+		fields = [];
+
+		for(var key in data){
+			//No need to specify Id
+			// That is done by the database
+			if(key == 'id' || key == 'checked'){
+				continue;
+			}
+
+			field = [];
+			field['fieldName'] = key;
+			field['fieldValue'] = data[key];
+			fields.push(field);
+
+			console.log('Field: ' + field['fieldName']);
+		}
+
+		dataToPass['fields'] = fields;
+
 		var source = $('#input_fields_template').html();
 		var i_f_template = Handlebars.compile(source);
 
-		var html = i_f_template(data);
+		var html = i_f_template(dataToPass);
 
 		$('.sectionB').append(html);
 
 	}
 
 	function LOAD_relation_template(data){
+		clearObjFields();
+		clearRelationTemplate();
+
 		console.log('LOADING relation_template');
+
+		//Wrap data
+		var dataToPass = [];
+		dataToPass['ratios'] = data;
+		console.log('ratios: ' + dataToPass['ratios']);
 
 		// adminSubmit now valid
 		$('#adminSubmit').fadeIn();
@@ -286,7 +332,7 @@
 		var source = $('#relation_template').html();
 		var r_template = Handlebars.compile(source);
 
-		var html = r_template(data);
+		var html = r_template(dataToPass);
 		$('.sectionB').append(html);
 	}
 
@@ -316,7 +362,7 @@
 
 <script id="select_comp_or_ratio_template" type="text/x-handlebars-template">
 
-	<select id='objSelector' onclick='sectionB_Handler()'>
+	<select id='objSelector' onchange='sectionB_Handler()'>
 	{{#each data}}
 		<option value={{this.id}}>{{this.name}}</option>
 	{{/each}}
@@ -328,18 +374,22 @@
 
 	<form id='objFields'>
 		{{#each fields}}
-			<input type='text' name='{{this.name}}'>
+			<p>{{this.fieldName}}</p>
+			<input type='text' id='{{this.fieldName}}' value='{{this.fieldValue}}'>
+			<br>
 		{{/each}}
 	</form>
 
 </script>
 
 <script id='relation_template' type='text/x-handlebars-template'>
-
+	
 
 	<form id='relationCheckForm'>
 		{{#each ratios}}
-			<input type='checkbox' name={{this.name}}>
+			<input type='checkbox' value='{{this.id}}'>{{this.name}}<br>
+		{{/each}}
+
 	</form>
 
 

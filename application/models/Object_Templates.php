@@ -24,8 +24,10 @@ class Object_Templates extends CI_Model{
 					   'id'=>null,
 					   'name'=>null,
 					   'value'=>null,
-					   'fk_comp'=>null
+					   'fk_comp'=>null,
+					   'checked'=>False
 					);
 		return $ratio;
 	}
+
 }

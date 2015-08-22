@@ -42,26 +42,87 @@ class master_controller extends CI_Controller {
 
 	}
 
-	public function getEmptyCommand(){
-		$cmd = [""];
-	}
-
 	public function clientRequest(){
 		$requestHeader = $this->input->post('requestHeader');
 		log_message('debug','master_controller: clientRequest: '.$requestHeader);
 
+		//Get objId if that was passed with the request
+		$objId = null;
+		$split = explode('_', $requestHeader);
+		if(count($split) == 2){
+			log_message('info', 'clientRequest: Request has objId');
+			$requestHeader = $split[0];
+			$objId = $split[1];
+
+			log_message('info', 'new request: '.$requestHeader);
+			log_message('info', 'objId: '.$objId);
+		}else{
+			log_message('info', 'clientRequest: No Explode');
+		}
+		// if(count($split) == 2){
+		// 	$objId = $split[1];
+		// 	log_message('info', 'request send with objId: '.$objId);
+		// }
+
 		switch($requestHeader){
 			case 'companyList':
+				//Get companyList and wrap in a response
 				$companyList = $this->DB_functs->getCompanyList();
-				echo json_encode($companyList);
+				$response = $this->generateResponse($requestHeader, $companyList);
+
+				echo json_encode($response);
 				break;
 			case 'ratioList':
+				//Get ratioList and wrap in a response
 				$ratioList = $this->DB_functs->getRatioList();
-				echo json_encode($ratioList);
+				$response = $this->generateResponse($requestHeader, $ratioList);
+
+				echo json_encode($response);
+				break;
+			case 'emptyCompany':
+				//Get company object and wrap in a response
+				$emptyCompany = $this->Object_Templates->getCompanyObject();
+				$response = $this->generateResponse($requestHeader, $emptyCompany);
+
+				echo json_encode($response);
+				break;
+			case 'emptyRatio':
+				//Get ratio object and wrap in a response
+				$emptyRatio = $this->Object_Templates->getRatioObject();
+				$response = $this->generateResponse($requestHeader, $emptyRatio);
+
+				echo json_encode($response);
+				break;
+			case 'companyRatioList':
+				$ratioList = $this->DB_functs->getCompanyRatioList($objId);
+				$response = $this->generateResponse($requestHeader, $ratioList);
+
+				echo json_encode($response);
+				break;
+			case 'updateCompany':
+				$company = $this->DB_functs->getCompanyById($objId);
+				$response = $this->generateResponse($requestHeader, $company);
+
+				echo json_encode($response);
+				break;
+			case 'updateRatio':
+				$ratio = $this->DB_functs->getRatioById($objId);
+				$response = $this->generateResponse($requestHeader, $ratio);
+
+				echo json_encode($response);
+
 				break;
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
 		}
+	}
+
+	public function generateResponse($requestHeader, $data){
+		$response = $this->Object_Templates->getResponseObject();
+		$response['header'] = $requestHeader;
+		$response['data'] = $data;
+
+		return $response;
 	}
 
 	public function uploadImages(){
