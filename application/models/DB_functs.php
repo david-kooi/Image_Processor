@@ -88,7 +88,27 @@ class DB_functs extends CI_Model{
 		$ratio['fk_comp'] = $data->fk_comp;
 
 		return $ratio;
+	}
 
+	public function getCompanyOption($objId){
+		$query = $this->db->query("SELECT * FROM `Options` WHERE `comp_id` =".$objId);
+
+		$optionsList = array();
+		$option = $this->Object_Templates->getOptionObject();
+		foreach ($query->result() as $row){
+			$option['id']=$row->id;
+            $option['ratio_id']=$row->ratio_id;
+            $option['comp_id']=$row->comp_id;
+            $option['x_small']=$row->x_small;
+            $option['y_small']=$row->y_small;
+            $option['x_med']=$row->x_med;
+            $option['y_med']=$row->y_med;
+            $option['x_large']=$row->x_large;
+            $option['y_large']=$row->y_large;
+			
+			$optionsList[] = $option;
+		}
+		return $optionsList;
 	}
 
 

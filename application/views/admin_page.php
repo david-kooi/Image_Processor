@@ -45,6 +45,10 @@
 
 	$(document).ready(function(){
 		sectionA_Handler()
+
+		$(".uncheckedOption").change(function(){
+			console.log('Change! ' + this.html());
+		});
 	});
 
 	
@@ -144,10 +148,12 @@
 				break;
 			case 'updateRatio':
 				LOAD_input_fields(dataObj['data']);
+			case 'companyOptions':
+				console.log('companyOptions recieved');
+				LOAD_relation_template(dataObj['data']);
+				break;
 			default:
 				console.log('dataObj header not recognized.');
-
-
 		}
 	}
 
@@ -182,7 +188,8 @@
 		// reciever case:
 		// Load reciever template
 		if (reciever == 'relation'){
-			request = 'companyRatioList_' + objId;
+			//request = 'companyRatioList_' + objId;
+			request = 'companyOptions_' + objId;
 			processObj_JSON_list(dataHandler, request);
 		}
 		// delete Case:
@@ -321,19 +328,68 @@
 
 		console.log('LOADING relation_template');
 
+		var ratioList = data['ratioList'];
+		var optionsList = data['optionsList'];
+
+		var checkedRatios = [];
+		var uncheckedRatios = [];
+
+		var ratioObj = {
+						ratio_id:null,
+						ratio_name:null,
+						ratio_value:null,
+						option_id:null,
+						option: []
+						};
+
+		console.log('ratioObj: ' + ratioObj['ratio']);
+
+		// If there are no options
+		if(optionsList.length == 0){
+			uncheckedRatios = ratioList;
+		}
+		// If there are options combine ratio & options for template
+		for(option of optionsList){
+			for(ratio of ratioList){
+				if(option['ratio_id'] == ratio['id']){
+
+					ratioObj['ratio_id'] = ratio['id'];
+					ratioObj['ratio_name'] = ratio['name'];
+					ratioObj['ratio_value'] = ratio['value'];
+					ratioObj['option'].push(option);
+
+					checkedRatios.push(ratioObj);
+				}else{
+					uncheckedRatios.push(ratio);
+				}
+			}
+		}
+
+		console.log('checked: ' + checkedRatios);
+		console.log('unchecked: ' + uncheckedRatios);
+
 		//Wrap data
 		var dataToPass = [];
-		dataToPass['ratios'] = data;
-		console.log('ratios: ' + dataToPass['ratios']);
-
-		// adminSubmit now valid
-		$('#adminSubmit').fadeIn();
+		dataToPass['checkedRatios'] = checkedRatios;
+		dataToPass['uncheckedRatios'] = uncheckedRatios;
 
 		var source = $('#relation_template').html();
 		var r_template = Handlebars.compile(source);
 
 		var html = r_template(dataToPass);
 		$('.sectionB').append(html);
+
+		// adminSubmit now valid
+		$('#adminSubmit').fadeIn();
+
+
+
+		// //Wrap data
+		// var dataToPass = [];
+		// dataToPass['ratios'] = data;
+		// console.log('ratios: ' + dataToPass['ratios']);
+
+		
 	}
 
 	function adminSubmit(){
@@ -386,10 +442,31 @@
 	
 
 	<form id='relationCheckForm'>
-		{{#each ratios}}
-			<input type='checkbox' value='{{this.id}}'>{{this.name}}<br>
-		{{/each}}
+		{{#each checkedRatios}}
+			<div class='optionDiv' id='{{this.id}}'>
+				<input type='checkbox' value='{{this.id}}' class='checkedOption' checked>{{this.ratio_name}}<br>
+				{{#each option}}
+					<p>Small</p>
+					<input type='text' id='{{this.id}}_x_small' value={{x_small}}>
+				    <input type='text' id='{{this.id}}_y_small' value={{y_small}}> <br>
+				    <br>
+				    <p>Med</p>
+				    <input type='text' id='{{this.id}}_x_med' value={{x_med}}>
+				    <input type='text' id='{{this.id}}_y_med' value={{y_med}}> <br>
+				    <br>
+				    <p>Large</p>
+				    <input type='text' id='{{this.id}}_x_large' value={{x_large}}>
+				    <input type='text' id='{{this.id}}_y_large' value={{y_large}}> <br>
+				{{/each}}
+			</div>
 
+		{{/each}}
+		{{#each uncheckedRatios}}
+			<div class='optionDiv' id='{{this.id}}'>
+				<input type='checkbox' value='{{this.id}}' class='uncheckedOption'>{{this.name}}<br>
+
+			</div>
+		{{/each}}
 	</form>
 
 

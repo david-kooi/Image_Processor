@@ -30,4 +30,18 @@ class Object_Templates extends CI_Model{
 		return $ratio;
 	}
 
+	function getOptionObject(){
+		$option = array(
+						'id'=>null,
+						'ratio_id'=>null,
+						'comp_id'=>null,
+						'x_small'=>null,
+						'y_small'=>null,
+						'x_med'=>null,
+						'y_med'=>null,
+						'x_large'=>null,
+						'y_large'=>null);
+		return $option;
+	}
+
 }

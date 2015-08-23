@@ -112,6 +112,17 @@ class master_controller extends CI_Controller {
 				echo json_encode($response);
 
 				break;
+			case 'companyOptions':
+				$optionsList = $this->DB_functs->getCompanyOption($objId);
+				$ratioList = $this->DB_functs->getRatioList($objId);
+
+				$optionBundle = array('optionsList'=>$optionsList,
+								      'ratioList'=>$ratioList);
+
+				$response = $this->generateResponse($requestHeader, $optionBundle);
+
+				echo json_encode($response);
+
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
 		}
