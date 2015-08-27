@@ -152,6 +152,7 @@
 				console.log('companyOptions recieved');
 				LOAD_relation_template(dataObj['data']);
 				break;
+
 			default:
 				console.log('dataObj header not recognized.');
 		}
@@ -425,40 +426,41 @@
 		}
 	}
 
-function getCall(input){
-		console.log('inputClass: ' + input.className);
-		console.log('nameId: ' + input.name);
+function getCall(checkbox){
+		console.log('inputClass: ' + checkbox.className);
+		console.log('nameId: ' + checkbox.name);
 
 
-		if(input.className == 'checkedOption'){
+		if(checkbox.className == 'checkedOption'){
 			
 			return function(){
-				checkedBoxHandler(input);
+				checkedBoxHandler(checkbox);
 			}
 
 		}
-		else if (input.className == 'uncheckedOption'){
+		else if (checkbox.className == 'uncheckedOption'){
 
 			return function(){
-				uncheckedBoxHandler(input);
+				uncheckedBoxHandler(checkbox);
 			}
 
 		}
 
 	}
 
-	function deleteTextInputFields(divId){
-		var inputs = document.getElementById(divId).getElementsByTagName('input');
+	function deleteTextInputFields(ratioId){
+		// Take ratioId and compId and delete row from Options table
+		compId = document.getElementById('objSelector').value;
 
-		for(var i = 0; i < inputs.length; i++){
-			var input = inputs[i];
-			console.log(input);
-		}
+		console.log('objSelector: ' + compId);
+		var request = generateDeleteOptionRequest(compId, ratioId);
+		processObj_JSON_list(dataHandler, request);
+
 	}
 
 
-	function checkedBoxHandler(input){
-		msg = input.name + " CheckBox UnPressed";
+	function checkedBoxHandler(checkbox){
+		msg = checkbox.name + " CheckBox UnPressed";
 		console.log(msg);
 		console.log("Alert User of Delete");
 
@@ -467,17 +469,17 @@ function getCall(input){
 
 		if(reply == true){
 			// Delete all entry fields
-			deleteTextInputFields(input.name);
+			deleteTextInputFields(checkbox.value);
 		}else{
-			console.log('ID: ' + input.id)
+			console.log('ID: ' + checkbox.id)
 			//Reset checkbox
-			document.getElementById(input.id).checked = true;
+			document.getElementById(checkbox.id).checked = true;
 
 		}
 	}
 
-	function uncheckedBoxHandler(input){
-		msg = input.name + " CheckBox Pressed";
+	function uncheckedBoxHandler(checkbox){
+		msg = checkbox.name + " CheckBox Pressed";
 		console.log(msg);
 		console.log('AlertUser of creation');
 
@@ -529,6 +531,17 @@ function getCall(input){
 
 			return ratioObj;
 		}
+	}
+
+
+	// Wrap delete option request
+	// This is sensative shtuff.
+	function generateDeleteOptionRequest(compId, ratioId){
+		// Request format: 
+		// deleteOption_`compId`_`ratioId`
+		// compId MUST precede ratioId
+
+		return 'deleteOption_' + compId + '_' + ratioId; 
 	}
 
 </script>

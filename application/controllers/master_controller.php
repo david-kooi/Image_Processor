@@ -48,16 +48,24 @@ class master_controller extends CI_Controller {
 
 		//Get objId if that was passed with the request
 		$objId = null;
+		$obj2Id = null;
 		$split = explode('_', $requestHeader);
 		if(count($split) == 2){
-			log_message('info', 'clientRequest: Request has objId');
+			log_message('info', 'clientRequest: Request has 1 ID');
 			$requestHeader = $split[0];
 			$objId = $split[1];
 
 			log_message('info', 'new request: '.$requestHeader);
 			log_message('info', 'objId: '.$objId);
+		}
+		else if(count($split) == 3){
+			log_message('info', 'clientRequest: Request has 2 IDs');
+			$requestHeader = $split[0];
+			$objId = $split[1];
+			$obj2Id = $split[2];
+
 		}else{
-			log_message('info', 'clientRequest: No Explode');
+			log_message('info', 'clientRequest: No IDs');
 		}
 		// if(count($split) == 2){
 		// 	$objId = $split[1];
@@ -122,7 +130,9 @@ class master_controller extends CI_Controller {
 				$response = $this->generateResponse($requestHeader, $optionBundle);
 
 				echo json_encode($response);
-
+			case 'deleteOption':
+				//$result = $this->DB_functs->deleteOption($objId, $obj2Id);
+				break;
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
 		}
