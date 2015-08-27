@@ -40,16 +40,16 @@
 
 		}
 
-	*/
+	*/ 
 
 
 	$(document).ready(function(){
 		sectionA_Handler()
 
-		$(".uncheckedOption").change(function(){
-			console.log('Change! ' + this.html());
-		});
+
 	});
+
+
 
 	
 
@@ -216,15 +216,6 @@
 
 	}
 
-	function sleep(milliseconds) {
-	  var start = new Date().getTime();
-		for (var i = 0; i < 1e7; i++) {
-		    if ((new Date().getTime() - start) > milliseconds){
-		      break;
-		    }
-		  }
-		}
-
 	function clearTemplates(){
 		clearObjFields();
 		clearRelationTemplate();
@@ -382,14 +373,48 @@
 		// adminSubmit now valid
 		$('#adminSubmit').fadeIn();
 
-
-
-		// //Wrap data
-		// var dataToPass = [];
-		// dataToPass['ratios'] = data;
-		// console.log('ratios: ' + dataToPass['ratios']);
+		addCheckBoxHandlers();
 
 		
+	}
+
+	function addCheckBoxHandlers(){
+
+		//Attach event handlers to checkboxes
+		var inputs = document.forms['relationCheckForm'].getElementsByTagName('input');
+		var checkedBoxes = [];
+		var uncheckedBoxes = [];
+
+		//Filter inputs down to checkboxes
+		for(var i = 0; i < inputs.length; i++){
+			var input = inputs[i];
+			var t = input.type;
+			var c = input.className;
+
+			if(t == 'checkbox'){
+				if(c == 'checkedOption'){
+					input.onclick = checkedBoxHandler;
+				}
+				else if(c == 'uncheckedOption'){
+					input.onclick = uncheckedBoxHandler;
+				}
+
+			}
+
+		}
+	}
+
+	function checkedBoxHandler(){
+		msg = this.innerHTML + "CheckBox UnPressed";
+		console.log(msg);
+		console.log("Alert User of Delete");
+
+		alert('Do you want to delete this ratio?');
+	}
+
+	function uncheckedBoxHandler(){
+		msg = this.innerHTML + " Check Box Pressed!";
+		console.log(msg);
 	}
 
 	function adminSubmit(){
@@ -412,9 +437,7 @@
 		
 	}
 
-
 </script>
-
 
 <script id="select_comp_or_ratio_template" type="text/x-handlebars-template">
 
@@ -443,7 +466,7 @@
 
 	<form id='relationCheckForm'>
 		{{#each checkedRatios}}
-			<div class='optionDiv' id='{{this.id}}'>
+			<div class='checkedOptionDiv' id='{{this.id}}'>
 				<input type='checkbox' value='{{this.id}}' class='checkedOption' checked>{{this.ratio_name}}<br>
 				{{#each option}}
 					<p>Small</p>
@@ -462,7 +485,7 @@
 
 		{{/each}}
 		{{#each uncheckedRatios}}
-			<div class='optionDiv' id='{{this.id}}'>
+			<div class='uncheckedOptionDiv' id='{{this.id}}'>
 				<input type='checkbox' value='{{this.id}}' class='uncheckedOption'>{{this.name}}<br>
 
 			</div>
