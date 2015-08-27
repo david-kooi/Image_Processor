@@ -325,23 +325,19 @@
 		var checkedRatios = [];
 		var uncheckedRatios = [];
 
-		var ratioObj = {
-						ratio_id:null,
-						ratio_name:null,
-						ratio_value:null,
-						option_id:null,
-						option: []
-						};
-
-		console.log('ratioObj: ' + ratioObj['ratio']);
+		//console.log('ratioObj: ' + ratioObj['ratio']);
 
 		// If there are no options
 		if(optionsList.length == 0){
-			uncheckedRatios = ratioList;
+			uncheckedRatios = ratioListConverter(ratioList);
 		}
+
 		// If there are options combine ratio & options for template
 		for(option of optionsList){
 			for(ratio of ratioList){
+
+				var ratioObj = getObjTemplate('ratioObj');
+
 				if(option['ratio_id'] == ratio['id']){
 
 					ratioObj['ratio_id'] = ratio['id'];
@@ -351,7 +347,12 @@
 
 					checkedRatios.push(ratioObj);
 				}else{
-					uncheckedRatios.push(ratio);
+
+					ratioObj['ratio_id'] = ratio['id'];
+					ratioObj['ratio_name'] = ratio['name'];
+					ratioObj['ratio_value'] = ratio['value'];
+
+					uncheckedRatios.push(ratioObj);
 				}
 			}
 		}
@@ -377,6 +378,24 @@
 
 		
 	}
+
+	//Convert ratiolist to ratioObjFormat
+	function ratioListConverter(ratioList){
+		ratioObjList = [];
+
+		for(ratio of ratioList){
+			ratioObj = getObjTemplate('ratioObj');	
+
+			ratioObj['ratio_id'] = ratio['id'];
+			ratioObj['ratio_name'] = ratio['name'];
+			ratioObj['ratio_value'] = ratio['value'];
+
+			ratioObjList.push(ratioObj);
+		}
+
+		return ratioObjList;
+	}
+
 
 	function addCheckBoxHandlers(){
 
@@ -437,6 +456,22 @@
 		
 	}
 
+
+	//Object factory
+	function getObjTemplate(obj){
+		if(obj == 'ratioObj'){
+			var ratioObj = {
+				ratio_id:null,
+				ratio_name:null,
+				ratio_value:null,
+				option_id:null,
+				option: []
+			};
+
+			return ratioObj;
+		}
+	}
+
 </script>
 
 <script id="select_comp_or_ratio_template" type="text/x-handlebars-template">
@@ -485,8 +520,8 @@
 
 		{{/each}}
 		{{#each uncheckedRatios}}
-			<div class='uncheckedOptionDiv' id='{{this.id}}'>
-				<input type='checkbox' value='{{this.id}}' class='uncheckedOption'>{{this.name}}<br>
+			<div class='uncheckedOptionDiv' id='{{this.ratio_id}}'>
+				<input type='checkbox' value='{{this.ratio_id}}' class='uncheckedOption'>{{this.ratio_name}}<br>
 
 			</div>
 		{{/each}}
