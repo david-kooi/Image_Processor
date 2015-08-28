@@ -158,6 +158,10 @@
 				// Now reload sectionB
 				sectionB_Handler();
 				break;
+			case 'emptyOption':
+				console.log('emptyOption recieved');
+				LOAD_relation_template(dataObj['data']);
+				break;
 			default:
 				console.log('dataObj header not recognized.');
 		}
@@ -333,13 +337,21 @@
 
 		//console.log('ratioObj: ' + ratioObj['ratio']);
 
-		// If there are no options
+		// If there are no options then all options are unchecked
 		if(optionsList.length == 0){
 			uncheckedRatios = ratioListConverter(ratioList);
 		}
 
+		// If there are no ratios 
+		if(ratioList.length == 0){
+			generateRatioObj(ratio);
+		}
+
 		// If there are options combine ratio & options for template
 		for(option of optionsList){
+			if(option['isEmpty'] == true){
+
+			}
 			for(ratio of ratioList){
 
 				var ratioObj = getObjTemplate('ratioObj');
@@ -389,6 +401,19 @@
 		
 	}
 
+	function generateRatioObj(ratio, option){
+		var ratioObj = getObjTemplate('ratioObj');
+
+		ratioObj['ratio_id'] = ratio['id'];
+		ratioObj['ratio_name'] = ratio['name'];
+		ratioObj['div_id'] = ratio['name'];
+		ratioObj['ratio_value'] = ratio['value'];
+		ratioObj['ratio_checkboxID'] = getRatioCheckBoxId(ratio);
+		ratioObj['option'].push(option);
+
+		return ratioObj;
+	}
+
 	//Convert ratiolist to ratioObjFormat
 	function ratioListConverter(ratioList){
 		ratioObjList = [];
@@ -431,7 +456,7 @@
 		}
 	}
 
-function getCall(checkbox){
+	function getCall(checkbox){
 		console.log('inputClass: ' + checkbox.className);
 		console.log('nameId: ' + checkbox.name);
 
@@ -465,7 +490,7 @@ function getCall(checkbox){
 
 	}
 
-
+	//Delete an existing option
 	function checkedBoxHandler(checkbox){
 		msg = checkbox.name + " CheckBox UnPressed";
 		console.log(msg);
@@ -485,6 +510,7 @@ function getCall(checkbox){
 		}
 	}
 
+	// create an option
 	function uncheckedBoxHandler(checkbox){
 		msg = checkbox.name + " CheckBox Pressed";
 		console.log(msg);
@@ -495,9 +521,11 @@ function getCall(checkbox){
 
 		if(reply == true){
 			//Add fields
+			processObj_JSON_list(dataHandler, 'emptyOption');
 
 		}else{
-			//Do nothing
+			//Reset checkbox
+			document.getElementById(checkbox.id).checked = true;
 		}
 	}
 

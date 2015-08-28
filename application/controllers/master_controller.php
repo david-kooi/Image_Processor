@@ -126,9 +126,9 @@ class master_controller extends CI_Controller {
 			case 'companyOptions':
 				$optionsList = $this->DB_functs->getCompanyOption($objId);
 				$ratioList = $this->DB_functs->getRatioList($objId);
-
-				$optionBundle = array('optionsList'=>$optionsList,
-								      'ratioList'=>$ratioList);
+				$isEmpty = false; // Are these options and ratios empty?
+				//option response must have options and ratio list
+				$optionBundle = $this->Object_Templates->getOptionResponse($optionsList, $ratioList, $isEmpty);
 
 				$response = $this->generateResponse($requestHeader, $optionBundle);
 
@@ -143,6 +143,27 @@ class master_controller extends CI_Controller {
 
 				echo json_encode($response);
 				break;
+
+			case 'emptyOption':
+				log_message('info', 'clientRequest: getting emptyOption');
+
+				$option = $this->Object_Templates->getOptionObject();
+				$optionList = array();
+				$optionList[] = $option;
+
+				//No ratios...we are creating a new option
+				$ratioList = array();
+
+				$isEmpty = true; //Yes, the options are empty
+				//option response must have options and ratio list
+				$optionBundle = $this->Object_Templates->getOptionResponse($optionList, $ratioList, $isEmpty);
+
+
+				$response = $this->generateResponse($requestHeader, $optionBundle);
+
+				echo json_encode($response);
+				break;
+
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
 		}

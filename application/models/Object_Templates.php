@@ -44,4 +44,11 @@ class Object_Templates extends CI_Model{
 		return $option;
 	}
 
+	function getOptionResponse($optionsList, $ratioList, $isEmpty){
+		$response = array('optionsList'=>$optionsList,
+						  'ratioList'=>$ratioList
+						  'isEmpty'=>$isEmpty);
+		return $response;
+	}
+
 }
