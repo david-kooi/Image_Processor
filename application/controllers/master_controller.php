@@ -125,7 +125,7 @@ class master_controller extends CI_Controller {
 				break;
 			case 'companyOptions':
 				$optionsList = $this->DB_functs->getCompanyOption($objId);
-				$ratioList = $this->DB_functs->getRatioList($objId);
+				$ratioList = $this->DB_functs->getRatioList();
 				$isEmpty = false; // Are these options and ratios empty?
 				//option response must have options and ratio list
 				$optionBundle = $this->Object_Templates->getOptionResponse($optionsList, $ratioList, $isEmpty);
@@ -144,19 +144,23 @@ class master_controller extends CI_Controller {
 				echo json_encode($response);
 				break;
 
-			case 'emptyOption':
+			case 'emptyOptionWithRatio':
 				log_message('info', 'clientRequest: getting emptyOption');
+				log_message('info', 'clientRequest: for ratio #'.$objId);
 
 				$option = $this->Object_Templates->getOptionObject();
 				$optionList = array();
 				$optionList[] = $option;
 
-				//No ratios...we are creating a new option
-				$ratioList = array();
+				$ratioList = [];
+				$ratioList = $this->DB_functs->getRatioList();
 
-				$isEmpty = true; //Yes, the options are empty
+				//Attach empty tag to the ratio to be created
+				$ratioList = $this->attachEmptyTag($ratioList, $objId);
+
+
 				//option response must have options and ratio list
-				$optionBundle = $this->Object_Templates->getOptionResponse($optionList, $ratioList, $isEmpty);
+				$optionBundle = $this->Object_Templates->getOptionResponse($optionList, $ratioList);
 
 
 				$response = $this->generateResponse($requestHeader, $optionBundle);
@@ -167,6 +171,24 @@ class master_controller extends CI_Controller {
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
 		}
+	}	
+
+	public function attachEmptyTag($ratioList, $tagId){
+		$newList = [];
+		foreach ($ratioList as $ratio) {
+			log_message('debug', 'ratio: ' + $ratio['id']);
+
+			if($tagId == $ratio['id']){
+				log_message('debug', 'tag match');
+				$ratio['emptyOption'] = True;
+			}
+
+			$newList[] = $ratio;
+
+		}
+
+		log_message('debug', 'newList Length: '.count($newList));
+		return $newList;
 	}
 
 	public function generateResponse($requestHeader, $data){

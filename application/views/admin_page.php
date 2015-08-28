@@ -158,8 +158,8 @@
 				// Now reload sectionB
 				sectionB_Handler();
 				break;
-			case 'emptyOption':
-				console.log('emptyOption recieved');
+			case 'emptyOptionWithRatio':
+				console.log('emptyOptionWithRatio recieved');
 				LOAD_relation_template(dataObj['data']);
 				break;
 			default:
@@ -342,37 +342,27 @@
 			uncheckedRatios = ratioListConverter(ratioList);
 		}
 
-		// If there are no ratios 
-		if(ratioList.length == 0){
-			generateRatioObj(ratio);
-		}
+		console.log('ratioList length: ' + ratioList.length);
 
 		// If there are options combine ratio & options for template
 		for(option of optionsList){
-			if(option['isEmpty'] == true){
 
-			}
 			for(ratio of ratioList){
+				
+				// Empty option case
+				if(ratio['emptyOption'] == true){
+					var ratioObj = generateRatioObj(ratio, option);
 
-				var ratioObj = getObjTemplate('ratioObj');
-
-				if(option['ratio_id'] == ratio['id']){
-
-					ratioObj['ratio_id'] = ratio['id'];
-					ratioObj['ratio_name'] = ratio['name'];
-					ratioObj['div_id'] = ratio['name'];
-					ratioObj['ratio_value'] = ratio['value'];
-					ratioObj['ratio_checkboxID'] = getRatioCheckBoxId(ratio);
-					ratioObj['option'].push(option);
+					checkedRatios.push(ratioObj);
+				}// General Case
+				else if(option['ratio_id'] == ratio['id']){
+					var ratioObj = generateRatioObj(ratio, option);
 
 					checkedRatios.push(ratioObj);
 				}else{
 
-					ratioObj['ratio_id'] = ratio['id'];
-					ratioObj['ratio_name'] = ratio['name'];
-					ratioObj['div_id'] = ratio['name'];
-					ratioObj['ratio_checkboxID'] = getRatioCheckBoxId(ratio);
-					ratioObj['ratio_value'] = ratio['value'];
+					//Option was not matched with ratio so generate with null option
+					var ratioObj = generateRatioObj(ratio, null);
 
 					uncheckedRatios.push(ratioObj);
 				}
@@ -402,6 +392,10 @@
 	}
 
 	function generateRatioObj(ratio, option){
+		console.log('-> generateRatioObj');
+		console.log('ratioName: ' + ratio['name']);
+
+
 		var ratioObj = getObjTemplate('ratioObj');
 
 		ratioObj['ratio_id'] = ratio['id'];
@@ -521,7 +515,8 @@
 
 		if(reply == true){
 			//Add fields
-			processObj_JSON_list(dataHandler, 'emptyOption');
+			var ratioId = checkbox.value;
+			processObj_JSON_list(dataHandler, 'emptyOptionWithRatio_' + ratioId);
 
 		}else{
 			//Reset checkbox

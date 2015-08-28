@@ -25,7 +25,8 @@ class Object_Templates extends CI_Model{
 					   'name'=>null,
 					   'value'=>null,
 					   'fk_comp'=>null,
-					   'checked'=>False
+					   'checked'=>False,
+					   'emptyOption'=>False
 					);
 		return $ratio;
 	}
@@ -44,10 +45,10 @@ class Object_Templates extends CI_Model{
 		return $option;
 	}
 
-	function getOptionResponse($optionsList, $ratioList, $isEmpty){
+	function getOptionResponse($optionsList, $ratioList){
 		$response = array('optionsList'=>$optionsList,
-						  'ratioList'=>$ratioList
-						  'isEmpty'=>$isEmpty);
+						  'ratioList'=>$ratioList,
+						  );
 		return $response;
 	}
 
