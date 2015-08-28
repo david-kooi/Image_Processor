@@ -152,7 +152,12 @@
 				console.log('companyOptions recieved');
 				LOAD_relation_template(dataObj['data']);
 				break;
+			case 'deleteOption':
+				console.log('deleteOption completed');
 
+				// Now reload sectionB
+				sectionB_Handler();
+				break;
 			default:
 				console.log('dataObj header not recognized.');
 		}
@@ -455,6 +460,8 @@ function getCall(checkbox){
 		console.log('objSelector: ' + compId);
 		var request = generateDeleteOptionRequest(compId, ratioId);
 		processObj_JSON_list(dataHandler, request);
+
+
 
 	}
 

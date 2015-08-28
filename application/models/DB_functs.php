@@ -111,5 +111,11 @@ class DB_functs extends CI_Model{
 		return $optionsList;
 	}
 
+	public function deleteOption($compId, $ratioId){
+		$result = $this->db->query("DELETE FROM Options WHERE comp_id='$compId' AND ratio_id='$ratioId' ");
+
+		return $result;
+	}
+
 
 }

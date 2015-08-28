@@ -56,7 +56,6 @@ class master_controller extends CI_Controller {
 			$objId = $split[1];
 
 			log_message('info', 'new request: '.$requestHeader);
-			log_message('info', 'objId: '.$objId);
 		}
 		else if(count($split) == 3){
 			log_message('info', 'clientRequest: Request has 2 IDs');
@@ -71,6 +70,10 @@ class master_controller extends CI_Controller {
 		// 	$objId = $split[1];
 		// 	log_message('info', 'request send with objId: '.$objId);
 		// }
+
+		log_message('info', 'objId: '.$objId);
+		log_message('info', 'objId2: '.$obj2Id);
+
 
 		switch($requestHeader){
 			case 'companyList':
@@ -130,8 +133,15 @@ class master_controller extends CI_Controller {
 				$response = $this->generateResponse($requestHeader, $optionBundle);
 
 				echo json_encode($response);
+				break;
 			case 'deleteOption':
-				//$result = $this->DB_functs->deleteOption($objId, $obj2Id);
+				$result = $this->DB_functs->deleteOption($objId, $obj2Id);
+				$response = $this->generateResponse($requestHeader, $result);
+
+				log_message('debug', 'deleteResponse: '.$response['data']);
+				log_message('debug', 'deleteResponse: '.$response['header']);
+
+				echo json_encode($response);
 				break;
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
