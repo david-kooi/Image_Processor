@@ -114,6 +114,18 @@
 			dataHandler(data);
 		});
 	}
+
+	function client_JSON_dataPush(header, data){
+		$.ajax({
+			url:"<?echo base_url()?>master_controller/clientPush",
+			data:{pushHeader: header,
+				  data: data},
+		    method:'POST'
+		}).done(function(status){
+
+		});
+
+	}
 	
 	function dataHandler(data){
 		var reciever = document.getElementById('recieverDropDown');
@@ -323,6 +335,16 @@
 
 	}
 
+
+	function UPDATE_relation_template(data){
+		console.log('LOADING relation_template');
+
+		var ratioList = data['ratioList'];
+		var optionsList = data['optionsList'];
+
+
+
+	}
 	function LOAD_relation_template(data){
 		clearObjFields();
 		clearRelationTemplate();
@@ -351,16 +373,18 @@
 				
 				// Empty option case
 				if(ratio['emptyOption'] == true){
+					console.log('emptyOption case');
 					var ratioObj = generateRatioObj(ratio, option);
 
 					checkedRatios.push(ratioObj);
 				}// General Case
 				else if(option['ratio_id'] == ratio['id']){
+					console.log('ratio-option match');
 					var ratioObj = generateRatioObj(ratio, option);
 
 					checkedRatios.push(ratioObj);
 				}else{
-
+					console.log('Not matched');
 					//Option was not matched with ratio so generate with null option
 					var ratioObj = generateRatioObj(ratio, null);
 
@@ -395,8 +419,12 @@
 		console.log('-> generateRatioObj');
 		console.log('ratioName: ' + ratio['name']);
 
-
 		var ratioObj = getObjTemplate('ratioObj');
+
+		if(option != null){
+			console.log('optionId: ' + option['id']);
+			ratioObj['optionId'] = option['id'];
+		}
 
 		ratioObj['ratio_id'] = ratio['id'];
 		ratioObj['ratio_name'] = ratio['name'];
@@ -525,14 +553,54 @@
 	}
 
 	function adminSubmit(){
+		console.log('-----adminSubmit-----');
+
 		var action = document.getElementById('actionDropDown').value;
 		var reciever = document.getElementById('recieverDropDown').value;
 
 		// Relation Case
 		if (reciever == 'relation'){
-			var company = document.getElementById('objSelector').value;
+			console.log('reciever: relation');
 
+			var companyId = document.getElementById('objSelector').value;
+
+			//This is what will be sent to server
+			var relationPackage = getObjTemplate('relationPackage');
+			relationPackage['compId'] = companyId;
+
+
+			var checkedOptions = $("form").children('.checkedOptionDiv');
+
+			//List to hold objects
+			var optionList = []
+			// Create an option object for each
+			var option = getObjTemplate('option');
+			for(var i = 0; i < checkedOptions.length; i++){
+				optionDiv = checkedOptions[i];
+
+				console.log('ratioId: ' + optionDiv.dataset.ratioid);
+				option['ratio_id'] = optionDiv.dataset.ratioid;
+
+				//Iterate through sizes
+				var sizeInputs = $(optionDiv).children('input');
+				for(var j = 0; j < sizeInputs.length; j++){
+					size = sizeInputs[j];
+
+					//Skip checkbox
+					if(size.type != 'text'){
+						continue;
+					}
+
+					console.log('option[' + size.id + '] = ' + size.value);
+					option[size.id] = size.value;
+				}
+				optionList.push(option);
+			}
+
+			relationPackage['optionList'] = optionList;
+			data = JSON.stringify(relationPackage);
 			//Get section B data, wrap in Command, then POST to server
+			client_JSON_dataPush('newOptions', data)
 		}
 		// Company and Ratio
 		else if (reciever == 'company'){
@@ -544,22 +612,53 @@
 		
 	}
 
+	function exposeObject(obj){
+		console.log('------obj------');
+		for(var prop in obj){
+			console.log(prop + ':' + obj.prop);
+		}
+		console.log('------obj------');
+	}
+
 
 	//Object factory
 	function getObjTemplate(obj){
-		if(obj == 'ratioObj'){
-			var ratioObj = {
-				ratio_id:null,
-				ratio_name:null,
-				ratio_value:null,
-				div_id:null,
-				ratio_checkboxID:null,
-				option_id:null,
+		switch(obj){
 
-				option: []
-			};
+			case 'ratioObj':
+				var ratioObj = {
+					ratio_id:null,
+					ratio_name:null,
+					ratio_value:null,
+					div_id:null,
+					ratio_checkboxID:null,
+					option_id:null,
 
-			return ratioObj;
+					option: []
+				};
+
+				return ratioObj;
+				break;
+		
+			case 'relationPackage':
+
+				var relationPackage = {
+						compId: null,
+						optionList: []
+				}
+
+				return relationPackage;
+			case 'option':
+				var option = {
+					ratio_id:null,
+					x_small:null,
+					y_small:null,
+					x_med:null,
+					y_med:null,
+					x_large:null,
+					y_large:null
+				}
+				return option;
 		}
 	}
 
@@ -603,20 +702,20 @@
 
 	<form id='relationCheckForm'>
 		{{#each checkedRatios}}
-			<div class='checkedOptionDiv' id='{{this.div_id}}'>
+			<div class='checkedOptionDiv' id='{{this.div_id}}' data-ratioid='{{this.ratio_id}}' >
 				<input type='checkbox' value='{{this.ratio_id}}' class='checkedOption' id="{{this.ratio_checkboxID}}"  name='{{this.ratio_name}}' checked>{{this.ratio_name}}<br>
 				{{#each option}}
 					<p>Small</p>
-					<input type='text' id='{{this.id}}_x_small' value={{x_small}}>
-				    <input type='text' id='{{this.id}}_y_small' value={{y_small}}> <br>
+					<input type='text' id='x_small' value={{x_small}}>
+				    <input type='text' id='y_small' value={{y_small}}> <br>
 				    <br>
 				    <p>Med</p>
-				    <input type='text' id='{{this.id}}_x_med' value={{x_med}}>
-				    <input type='text' id='{{this.id}}_y_med' value={{y_med}}> <br>
+				    <input type='text' id='x_med' value={{x_med}}>
+				    <input type='text' id='y_med' value={{y_med}}> <br>
 				    <br>
 				    <p>Large</p>
-				    <input type='text' id='{{this.id}}_x_large' value={{x_large}}>
-				    <input type='text' id='{{this.id}}_y_large' value={{y_large}}> <br>
+				    <input type='text' id='x_large' value={{x_large}}>
+				    <input type='text' id='y_large' value={{y_large}}> <br>
 				{{/each}}
 			</div>
 

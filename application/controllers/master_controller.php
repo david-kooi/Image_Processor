@@ -173,6 +173,16 @@ class master_controller extends CI_Controller {
 		}
 	}	
 
+	public function clientPush(){
+		$header = $this->input->post('header');
+		$data = $this->input->post('data');
+
+		log_message('info', 'clientPush: '.$header);
+		log_message('info', 'data: '.$data);
+
+
+	}
+
 	public function attachEmptyTag($ratioList, $tagId){
 		$newList = [];
 		foreach ($ratioList as $ratio) {
