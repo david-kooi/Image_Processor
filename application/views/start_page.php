@@ -178,11 +178,22 @@
       case 'companyOptions':
         console.log('companyOptions recieved');
         loadRatioDropdown(dataObj['data']);
-
+        break;
+      case 'processImages':
+        console.log('processImages result recieved');
+        evaluateImageProcess(dataObj['data']);
         break;
 
     }
   }
+
+    function evaluateImageProcess(status){
+      if(status){
+        console.log('Image Processing Sucess');
+      }else{
+        console.log('Image Processing Failed. Check php logs.')
+      }
+    }
 
     function sendAjax(request){
       console.log('--- processObj_JSON_list ---');

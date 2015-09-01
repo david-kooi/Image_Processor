@@ -38,6 +38,8 @@ define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
 //User Defined Constants
 define('TMP_FLD',								'tempFolder/');
+define('OUTPUT_FOLDER',						    'output_folder/');
+define('ARCHIVE',							    'archive/');
 
 
 /* End of file constants.php */
