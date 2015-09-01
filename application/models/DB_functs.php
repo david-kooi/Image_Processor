@@ -49,11 +49,14 @@ class DB_functs extends CI_Model{
 		return $ratioList; 
 	}
 
+
+
+
 	//Get all ratios that a company is tied to.
 	/*
 		Get full list and mark ratios that are tied to the company
 	*/
-	public function getCompanyRatioList($objId){
+	public function getCompanyFullRatioList($objId){
 		$fullRatioList = $this->getRatioList();
 
 		foreach($fullRatioList as $ratio){
@@ -77,6 +80,7 @@ class DB_functs extends CI_Model{
 	}
 
 	public function getRatioById($objId){
+		log_message('debug','getRatioById: '.$objId);
 		$query = $this->db->query("SELECT * FROM `Ratios` WHERE `id` =".$objId);
 		$data = $query->result()[0];
 
@@ -250,9 +254,19 @@ class DB_functs extends CI_Model{
 			log_message('info', 'deleting option with comp_id: '.$compId.'and ratio_id: '.$ratioId);
 			$this->deleteOption($compId, $ratioId);
 		}
-
-
 	}
+
+	public function getOptionById($optionId){
+		$query = $this->db->query("SELECT * FROM `Options` WHERE id='$optionId'");
+	
+		if(count($query->result()) > 1)
+			log_message('info', "WARNING: Duplicate Option");
+		else{
+			return $query->result()[0];
+		}
+	}
+
+	
 
 	public function processCompany($process, $packedData){
 		$unpackedData = json_decode($packedData, True);

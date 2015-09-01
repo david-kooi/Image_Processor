@@ -152,8 +152,8 @@
 				console.log('emptyRatio recieved');
 				LOAD_input_fields(dataObj['data']);
 				break;
-			case 'companyRatioList':
-				console.log('companyRatioList recieved');
+			case 'companyFullRatioList':
+				console.log('companyFullRatioList recieved');
 				LOAD_relation_template(dataObj['data']);
 				break;
 			case 'updateCompany':

@@ -23,7 +23,7 @@ class master_controller extends CI_Controller {
 
             $this->load->model('image_upload_functs');
             $this->load->model('DB_functs');
-
+            $this->load->model('image_processing');
 
 		$sessionData = $this->session->all_userdata();
 
@@ -41,6 +41,8 @@ class master_controller extends CI_Controller {
 		//Load Start Data (Company and Ratio Lists)
 
 	}
+
+
 
 	public function clientRequest(){
 		$requestHeader = $this->input->post('requestHeader');
@@ -104,7 +106,7 @@ class master_controller extends CI_Controller {
 
 				echo json_encode($response);
 				break;
-			case 'companyRatioList':
+			case 'companyFullRatioList':
 				$ratioList = $this->DB_functs->getCompanyRatioList($objId);
 				$response = $this->generateResponse($requestHeader, $ratioList);
 
@@ -173,6 +175,10 @@ class master_controller extends CI_Controller {
 
 				echo json_encode($response);
 				break;
+
+				case 'processImages':
+					$this->image_processing->processFiles($objId);
+					break;
 
 			default:
 				log_message('error','ERROR: master_controller: clientRequest:'.$requestHeader.' not recognized');
