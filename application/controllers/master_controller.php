@@ -35,7 +35,7 @@ class master_controller extends CI_Controller {
 
 
 		//Load Start Page
-		$this->load->view('start_page');
+		$this->load->view('main_page');
 		log_message('info', 'master_controller: start_page loaded');
 
 		//Load Start Data (Company and Ratio Lists)
