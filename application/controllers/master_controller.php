@@ -124,7 +124,7 @@ class master_controller extends CI_Controller {
 
 				break;
 			case 'companyOptions':
-				$optionsList = $this->DB_functs->getCompanyOption($objId);
+				$optionsList = $this->DB_functs->getCompanyOptions($objId);
 				$ratioList = $this->DB_functs->getRatioList();
 				$isEmpty = false; // Are these options and ratios empty?
 				//option response must have options and ratio list
@@ -147,16 +147,22 @@ class master_controller extends CI_Controller {
 			case 'emptyOptionWithRatio':
 				log_message('info', 'clientRequest: getting emptyOption');
 				log_message('info', 'clientRequest: for ratio #'.$objId);
+				log_message('info', 'clientRequest: with company # '.$obj2Id);
 
 				$option = $this->Object_Templates->getOptionObject();
-				$optionList = array();
+				$optionList = $this->DB_functs->getCompanyOptions($obj2Id);
+
+
+				// Add empty option
+				// Option has ratio specified
+				$option['ratio_id'] = $objId;
 				$optionList[] = $option;
 
 				$ratioList = [];
 				$ratioList = $this->DB_functs->getRatioList();
 
 				//Attach empty tag to the ratio to be created
-				$ratioList = $this->attachEmptyTag($ratioList, $objId);
+				//$ratioList = $this->attachEmptyTag($ratioList, $objId);
 
 
 				//option response must have options and ratio list
@@ -174,12 +180,29 @@ class master_controller extends CI_Controller {
 	}	
 
 	public function clientPush(){
-		$header = $this->input->post('header');
+		$header = $this->input->post('pushHeader');
+		$process = $this->input->post('process');
 		$data = $this->input->post('data');
 
 		log_message('info', 'clientPush: '.$header);
 		log_message('info', 'data: '.$data);
 
+
+		switch($header){
+
+			case 'options':
+				log_message('info', 'clientPush: options recieved');
+				$this->DB_functs->processOptions($process, $data);
+				break; 
+			case 'company':
+				log_message('info', 'clientPush: company recieved');
+				$this->DB_functs->processCompany($process, $data);
+				break;
+			case 'ratio':
+				log_message('info', 'clientPush: ratio recieved');
+				$this->DB_functs->processRatio($process, $data);
+				break;
+		}
 
 	}
 
