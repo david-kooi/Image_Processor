@@ -198,12 +198,29 @@
     }
   }
 
-    function evaluateImageProcess(status){
-      if(status){
+    function evaluateImageProcess(processResponse){
+      if(processResponse['status']){
         console.log('Image Processing Sucess');
+
+        var msg = "---------Image Processing Success---------" +
+                  "\nOutputFolder: " + processResponse['companyPath'] +
+                  "\nRatio Used: " + processResponse['ratioUsed'] +
+                  "\nx_small: " + processResponse['x_small'] +
+                  "\nx_med: " + processResponse['x_med'] +
+                  "\nx_large" + processResponse['x_large'] +
+                  "\nImages: \n";
+        // Add image names
+        for(img of processResponse['imagesProcessed']){
+            msg = msg + img + "\n";
+        }
+
+        alert(msg);
+
       }else{
         console.log('Image Processing Failed. Check php logs.')
       }
+
+      location.reload();
     }
 
     function sendAjax(request){

@@ -177,12 +177,13 @@ class master_controller extends CI_Controller {
 				break;
 
 				case 'processImages':
+					log_message("info", 'requestHeader: '.$requestHeader);
+
 					$result = $this->image_processing->processFiles($objId);
 					
-					$data = json_encode($result);
+					$response = $this->generateResponse($requestHeader, $result);
 
-					echo $data;
-
+					echo json_encode($response);
 					break;
 
 			default:

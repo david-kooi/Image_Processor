@@ -51,16 +51,44 @@ class image_processing extends CI_Model{
 		$largePath = 'large';
 
 		$archive = $company['name'];
-
-
+		//
 		
 		log_message('debug','modelImage: processFiles');
-
 		log_message('debug','ratio: '.$targetRatio);
 
 		$listFiles = scandir(TMP_FLD);
-
 		log_message('debug','# images: '.count($listFiles));
+
+		//------------Create Folders----------------V
+		//Make sure output folder exists
+		if(!file_exists(OUTPUT_FOLDER)){
+			mkdir(OUTPUT_FOLDER);
+		}
+		//Make sure company path exists
+		$outputCompany_path = OUTPUT_FOLDER.'/'.$archive;
+		if(!file_exists($outputCompany_path)){
+			mkdir($outputCompany_path);
+		}
+		//Make sure archive folder exists
+		if(!file_exists(ARCHIVE)){
+			mkdir(ARCHIVE);
+		}
+		//Make sure archive company folder exists
+		$archiveCompany_path = ARCHIVE.'/'.$archive;
+		if(!file_exists($archiveCompany_path)){
+			mkdir($archiveCompany_path);
+		}
+		//------------Create Folders----------------^
+
+
+		//-----------------Create Response---------------
+		$processResponse = $this->Object_Templates->getprocessResponse();
+		$processResponse['companyPath'] = $outputCompany_path;
+		$processResponse['ratioUsed'] = $ratio['name'];
+		$processResponse['x_small'] = $smallWidth;
+		$processResponse['x_med'] = $medWidth;
+		$processResponse['x_large'] = $largeWidth;
+		$processResponse['imagesProcessed'] = array();
 
 		try{
 			$source = TMP_FLD;
@@ -130,28 +158,6 @@ class image_processing extends CI_Model{
 				
 				//set height to 0 to keep aspect ratio
 				$height = 0;
-				
-			
-				//Make sure output folder exists
-				if(!file_exists(OUTPUT_FOLDER)){
-					mkdir(OUTPUT_FOLDER);
-				}
-				//Make sure company path exists
-				$outputCompany_path = OUTPUT_FOLDER.'/'.$archive;
-				if(!file_exists($outputCompany_path)){
-					mkdir($outputCompany_path);
-				}
-				//Make sure archive folder exists
-				if(!file_exists(ARCHIVE)){
-					mkdir(ARCHIVE);
-				}
-				//Make sure archive company folder exists
-				$archiveCompany_path = ARCHIVE.'/'.$archive;
-				if(!file_exists($archiveCompany_path)){
-					mkdir($archiveCompany_path);
-				}
-
-
 
 				$width = $largeWidth;	
 				$quality = 90;	
@@ -175,14 +181,17 @@ class image_processing extends CI_Model{
 				$archiveImage_path = $archiveCompany_path.'/'.$imageFile;
 				$this->archive($imageSource_path,$archiveImage_path);
 
-
+				$processResponse['imagesProcessed'][] = $imageFile;
 
 			}
 		} catch(Exception $e){
 			log_message('info', 'Exception thrown: '.$e->message());
-			return False;
+			
+			$processResponse['status'] = false;
+			return $processResponse;
 		}
-		return True;
+		$processResponse['status'] = true;
+		return $processResponse;
 	}
 
 	function exportSize($canvas, $width, $height, $destination_folder, $imageFile, $quality,$newName)

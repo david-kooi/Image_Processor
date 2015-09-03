@@ -52,4 +52,17 @@ class Object_Templates extends CI_Model{
 		return $response;
 	}
 
+	function getProcessResponse(){
+		$response = array(
+					'status'=>null,
+					'companyPath'=>null,
+					'ratioUsed'=>null,
+					'x_small'=>null,
+					'x_med'=>null,
+					'x_large'=>null,
+					'imagesProcessed'=>null
+			);
+		return $response;
+	}
+
 }
