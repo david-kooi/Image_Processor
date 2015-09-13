@@ -2,8 +2,17 @@
 Image Server Codeigniter Repository
 
 
-New objects can be created, updated, and deleted in the admin page. The admin page can be particular, so it would be useful for someone to provide a walkthrough.
+Setup
+'''''
 
+- Open PhpMyAdmin
+- Create a new table
+- Import DataBase.sql
+- Configure Database name in
+	application/config/config.php
+
+
+New objects can be created, updated, and deleted in the admin page. The admin page can be particular, so it would be useful for someone to provide a walkthrough.
 
 Output Structure
 ''''''''''''''''
